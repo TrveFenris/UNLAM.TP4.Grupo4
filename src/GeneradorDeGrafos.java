@@ -4,7 +4,7 @@ import java.util.Random;
 
 public class GeneradorDeGrafos {
 	
-	public static Grafo generarGrafoAleatorioProbabilistico(int cantNodos, double porcAdy){
+	public static Grafo generarGrafoAleatorioConPorcentajeDeAdyacencia(int cantNodos, double porcAdy){
 		Random r=new Random();
 		MatrizSimetrica m=new MatrizSimetrica(cantNodos);
 		int rand;
