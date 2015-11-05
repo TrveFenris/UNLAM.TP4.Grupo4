@@ -37,13 +37,12 @@ public class Grafo {
 			grMin=Integer.parseInt(datos[4]);
 			this.matriz=new MatrizSimetrica(cantNodos);
 			//Lectura
-			
+			line = bufInput.readLine();
 			for(int i=0;i<cantAristas;i++)
 			{
-				line = bufInput.readLine();
-				datos = line.split(" ");
+				datos = line.split(" ");	
 				matriz.setValor(Integer.parseInt(datos[0])-1, Integer.parseInt(datos[1])-1, true);
-				//line=bufInput.readLine();
+				line=bufInput.readLine();
 			}
 			bufInput.close();
 			matriz.mostrarMatriz();
@@ -110,4 +109,37 @@ public class Grafo {
 	public void mostrarGrafo(){
 		matriz.mostrarMatriz();
 	}
+	
+	public void guardarGrafo(String path){
+		FileWriter fichero = null; //!=FileReader
+        PrintWriter pw = null;//!=BufferedReader
+        try
+        {
+            fichero = new FileWriter(path);
+            pw = new PrintWriter(fichero);
+            pw.println(cantNodos+" "+cantAristas+" "+porcentAdy+" "+grMax+" "+grMin);
+            for(int f=0;f<cantNodos;f++){
+            	for(int c=f+1;c<cantNodos;c++)
+            		if(getValor(f, c)==true){
+            			pw.println((f+1)+" "+(c+1));
+            		}
+            }
+        } 
+        catch (Exception e) 
+        {
+            e.printStackTrace();
+        } 
+        finally 
+        {
+           try 
+           {
+	           if (null != fichero)
+	              fichero.close();
+           } 
+           catch (Exception e2) 
+           {
+              e2.printStackTrace();
+           }
+        }
+    }
 }
