@@ -9,11 +9,12 @@ public class GeneradorDeGrafos {
 		MatrizSimetrica m=new MatrizSimetrica(cantNodos);
 		int rand;
 		int maxAristas=(cantNodos*(cantNodos-1))/2;
-		Double aux=(porcAdy*m.getTam())/100;;
+		Double aux=(porcAdy*m.getTam())/100;
 		int cantAristas=(int)Math.round(aux);
 		System.out.println(maxAristas+"\t"+cantAristas);
 		for(int i=0;i<cantAristas;i++){
-			if(m.getValor(rand=r.nextInt(cantAristas))==true)
+			rand=r.nextInt(maxAristas);
+			if(m.getValor(rand) == true)
 				i--;
 			else
 				m.setValor(rand, true);
@@ -21,4 +22,5 @@ public class GeneradorDeGrafos {
 		double porcAdyReal=(cantAristas*100)/maxAristas;
 		return new Grafo(cantNodos,m,cantAristas,porcAdyReal);
 	}
+	
 }
