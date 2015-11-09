@@ -69,6 +69,19 @@ public class Grafo {
 		return matriz.getValor(nodoA, nodoB);
 	}
 	
+	public boolean esConexo() {
+		for(int f=0;f<cantNodos;f++) {
+			int contador=0;
+			for(int c=0;c<cantNodos;c++) {
+				if(getValor(f, c)==true && (f!=c))
+					contador++;
+			}
+			if(contador == 0)
+				return false;
+		}
+		return true;
+	}
+	
 	public int getTam(){
 		return matriz.getTam();
 	}
