@@ -1,6 +1,12 @@
 package grafos;
 
-import java.io.*;
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileReader;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.io.PrintWriter;
+import java.util.ArrayList;
 
 public class Grafo {
 
@@ -64,25 +70,36 @@ public class Grafo {
 	public boolean getValor(int f, int c){
 		return matriz.getValor(f, c);
 	}
-	
+	public int getCantNodos(){
+		return cantNodos;
+	}
 	public boolean esAdyacente(int nodoA, int nodoB){
 		return matriz.getValor(nodoA, nodoB);
 	}
-	
-	public boolean esConexo() {
-		for(int f=0;f<cantNodos;f++) {
-			int contador=0;
-			for(int c=0;c<cantNodos;c++) {
-				if(getValor(f, c)==true && (f!=c))
-					contador++;
+	public ArrayList<Integer> nodosAdyacentesA(int nodo) {
+		ArrayList<Integer> nodosAdy = new ArrayList<Integer>();
+		for(int i=0; i < matriz.getDimension(); i++) {
+			if(esAdyacente(nodo, i) && nodo != i) {
+				nodosAdy.add(i);
 			}
-			if(contador == 0)
-				return false;
 		}
-		return true;
+		return nodosAdy;
 	}
 	
-	public int getTam(){
+	
+	public boolean esConexo() {
+		boolean result = true;
+		BusquedaDFS busqueda = new BusquedaDFS(this, 0);
+		for(int i = 0; i < cantNodos; i++) {
+			if(!busqueda.marked(i)) {
+				result = false;
+				break;
+			}
+		}
+		return result;
+	}
+	
+	public int getTam(){  
 		return matriz.getTam();
 	}
 	
