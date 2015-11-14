@@ -102,7 +102,9 @@ public class Grafo {
 	public int getTam(){  
 		return matriz.getTam();
 	}
-	
+	public int getAristas() {
+		return cantAristas;
+	}
 	public void calcularGrados() {
 		grMax=1;
 		int aux;

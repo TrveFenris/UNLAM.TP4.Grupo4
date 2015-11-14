@@ -3,7 +3,7 @@ package grafos;
 import java.util.Random;
 
 public class GeneradorDeGrafos {
-	
+	//Generador de grafos aleatorios dados N y el porcentaje de adyacencia.
 	public static Grafo generarGrafoAleatorioConPorcentajeDeAdyacencia(int cantNodos, double porcAdy) throws GrafoNoConexoException{
 		Random r=new Random();
 		MatrizSimetrica m=new MatrizSimetrica(cantNodos);
@@ -28,5 +28,29 @@ public class GeneradorDeGrafos {
 			throw new GrafoNoConexoException();
 		}
 	}
-	
+	//Generador de grafos aleatorios dados N y una probabilidad para cada arista.
+	public static Grafo generarGrafoAleatorioProbabilistico(int cantNodos, double probabilidad) throws GrafoNoConexoException{
+		Random r = new Random();
+		MatrizSimetrica m = new MatrizSimetrica(cantNodos);
+		final int maxAristas = m.getTam();
+		int cantAristas = 0;
+		for(int i=0; i<maxAristas; i++) {
+			double porc = r.nextDouble();
+			if(porc < probabilidad){
+				m.setValor(i, true);
+				cantAristas++;
+			}
+			else{
+				m.setValor(i, false);
+			}
+		}
+		double porcAdyReal=(cantAristas*100)/maxAristas;
+		Grafo g = new Grafo(cantNodos,m,cantAristas,porcAdyReal);
+		if(g.esConexo()) {
+			return g;
+		}
+		else {
+			throw new GrafoNoConexoException();
+		}
+	}
 }
