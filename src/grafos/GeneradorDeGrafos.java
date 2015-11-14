@@ -55,7 +55,6 @@ public class GeneradorDeGrafos {
 	}
 	//Generador de grafos regulares dados N y el grado.
 	public static Grafo generarGrafoRegularGradoN(int cantNodos, int grado) throws GrafoInvalidoException{
-		if(grado == 0) throw new GrafoNoConexoException();
 		if(grado >= cantNodos || cantNodos == 0) throw new GrafoInvalidoException();
 		if(cantNodos%2 == 0) { //par
 			
