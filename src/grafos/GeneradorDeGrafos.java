@@ -4,7 +4,7 @@ import java.util.Random;
 
 public class GeneradorDeGrafos {
 	
-	public static Grafo generarGrafoAleatorioConPorcentajeDeAdyacencia(int cantNodos, double porcAdy){
+	public static Grafo generarGrafoAleatorioConPorcentajeDeAdyacencia(int cantNodos, double porcAdy) throws GrafoNoConexoException{
 		Random r=new Random();
 		MatrizSimetrica m=new MatrizSimetrica(cantNodos);
 		int rand;
@@ -20,7 +20,13 @@ public class GeneradorDeGrafos {
 				m.setValor(rand, true);
 		}
 		double porcAdyReal=(cantAristas*100)/maxAristas;
-		return new Grafo(cantNodos,m,cantAristas,porcAdyReal);
+		Grafo g = new Grafo(cantNodos,m,cantAristas,porcAdyReal);
+		if(g.esConexo()) {
+			return g;
+		}
+		else {
+			throw new GrafoNoConexoException();
+		}
 	}
 	
 }
