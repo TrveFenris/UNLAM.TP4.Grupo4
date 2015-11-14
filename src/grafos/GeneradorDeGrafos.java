@@ -53,4 +53,22 @@ public class GeneradorDeGrafos {
 			throw new GrafoNoConexoException();
 		}
 	}
+	//Generador de grafos regulares dados N y el grado.
+	public static Grafo generarGrafoRegularGradoN(int cantNodos, int grado) throws GrafoInvalidoException{
+		if(grado == 0) throw new GrafoNoConexoException();
+		if(grado >= cantNodos || cantNodos == 0) throw new GrafoInvalidoException();
+		if(cantNodos%2 == 0) { //par
+			
+		}
+		else { //impar
+			if(grado==1) throw new GrafoInvalidoException();
+		}
+		Grafo g = new Grafo();
+		return g;
+	}
+	//Generador de grafos regulares dados N y el porcentaje de adyacencia.
+	public static Grafo generarGrafoRegularConPorcentajeDeAdyacencia(int cantNodos, double porcAdy){
+		Grafo g = new Grafo();
+		return g;
+	}
 }
