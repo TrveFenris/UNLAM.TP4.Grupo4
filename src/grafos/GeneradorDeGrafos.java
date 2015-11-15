@@ -55,14 +55,25 @@ public class GeneradorDeGrafos {
 	}
 	//Generador de grafos regulares dados N y el grado.
 	public static Grafo generarGrafoRegularGradoN(int cantNodos, int grado) throws GrafoInvalidoException{
-		if(grado >= cantNodos || cantNodos == 0) throw new GrafoInvalidoException();
+		if(grado >= cantNodos || cantNodos <= 0 || grado < 0) throw new GrafoInvalidoException();
+		MatrizSimetrica matriz = new MatrizSimetrica(cantNodos);
+		int cantAristas = 0;
 		if(cantNodos%2 == 0) { //par
-			
+			int salteoUniones = 0;
+			int salteoNodo =  2;
+			for(int g = 1; g <= grado; g++) {
+				for(int i = g-1; i < cantNodos; i+=salteoNodo) {
+					matriz.setValor(i+salteoUniones, true);
+					cantAristas++;
+				}
+				if(g%2 == 0) salteoUniones++;
+				if(g%2 == 0) salteoNodo++;
+			}
 		}
 		else { //impar
 			if(grado==1) throw new GrafoInvalidoException();
 		}
-		Grafo g = new Grafo();
+		Grafo g = new Grafo(cantNodos,matriz,cantAristas,(cantAristas*100)/((cantNodos*(cantNodos-1))/2));
 		return g;
 	}
 	//Generador de grafos regulares dados N y el porcentaje de adyacencia.
