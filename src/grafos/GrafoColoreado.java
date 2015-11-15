@@ -12,6 +12,9 @@ import java.util.Map;
 public class GrafoColoreado {
 	private Grafo grafoOriginal;
 	private Map<Integer,Integer> salidaColoreada; //Mapa que asocia numero de grafo con numero de color
+	private boolean nodosRepetidos;
+	private boolean nodosSinPintar;
+	private boolean	nodosAdyacentesIgualColor;
 	
 	public GrafoColoreado(String entrada, String salida) {
 		try{
@@ -29,18 +32,16 @@ public class GrafoColoreado {
 				line = br.readLine();
 				datos = line.split(" ");
 				if(salidaColoreada.containsKey(Integer.parseInt(datos[0]))) {
-					System.out.println("ERROR: El nodo ya fue coloreado una vez");
-					break;
+					nodosRepetidos = true;
 				}
 				else {
 					salidaColoreada.put(Integer.parseInt(datos[0]), Integer.parseInt(datos[1]));
 				}
 			}
 			
-			for(Iterator<Integer> i = salidaColoreada.keySet().iterator(); i.hasNext(); ) {
-				Integer key = i.next();
+			for(Integer key : salidaColoreada.keySet()) {
 				if(!(salidaColoreada.get(key).compareTo(0) > 0)) {
-					System.out.println("ERROR: El nodo no esta pintado");
+					nodosSinPintar = true;
 					break;
 				}
 			}
@@ -49,7 +50,7 @@ public class GrafoColoreado {
 				for(int j=i;j<=cantNodos;j++){
 					if(grafoOriginal.getValor(i-1,j-1)==true && i!=j){
 						if(salidaColoreada.get(i).equals(salidaColoreada.get(j))) {
-							System.out.println("ERROR: Los nodos "+i+" y "+j+" son del mismo color");
+							nodosAdyacentesIgualColor = true;
 						}
 					}
 				}
@@ -59,5 +60,15 @@ public class GrafoColoreado {
 		catch(IOException e){
 			e.printStackTrace();			
 		}
+	}
+	
+	public boolean hayNodosRepetidos() {
+		return nodosRepetidos;
+	}
+	public boolean hayNodosSinPintar() {
+		return nodosSinPintar;
+	}
+	public boolean hayNodosAdyacentesIgualColor() {
+		return nodosAdyacentesIgualColor;
 	}
 }
