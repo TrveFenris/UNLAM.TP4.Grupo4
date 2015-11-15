@@ -16,12 +16,14 @@ public class Grafo {
 	private double porcentAdy;
 	private int grMax;
 	private int grMin;
+	private Nodo[] nodos;
 	
 	public Grafo(int cantNodos, MatrizSimetrica m, int cAristas, double pAdy){
 		this.cantNodos=cantNodos;
 		this.matriz=m;
 		this.cantAristas=cAristas;
 		this.porcentAdy=pAdy;
+		this.nodos=new Nodo[cantNodos];
 		calcularGrados();
 	}
 	
@@ -36,6 +38,7 @@ public class Grafo {
 			line = bufInput.readLine();
 			datos=line.split(" ");
 			cantNodos=Integer.parseInt(datos[0]);
+			nodos=new Nodo[cantNodos];
 			cantAristas=Integer.parseInt(datos[1]);
 			porcentAdy=Double.parseDouble(datos[2]);
 			grMax=Integer.parseInt(datos[3]);
