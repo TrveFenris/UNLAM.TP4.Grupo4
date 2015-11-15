@@ -59,19 +59,24 @@ public class GeneradorDeGrafos {
 		MatrizSimetrica matriz = new MatrizSimetrica(cantNodos);
 		int cantAristas = 0;
 		if(cantNodos%2 == 0) { //par
-			int salteoUniones = 0;
-			int salteoNodo =  2;
-			for(int g = 1; g <= grado; g++) {
-				for(int i = g-1; i < cantNodos; i+=salteoNodo) {
-					matriz.setValor(i+salteoUniones, true);
+			if(grado%2==1) {
+				int saltoImpar = (cantNodos/2) - 1;
+				for(int i = 0; i < cantNodos; i++) {
+					matriz.setValor(i,i+saltoImpar, true);
 					cantAristas++;
 				}
-				if(g%2 == 0) salteoUniones++;
-				if(g%2 == 0) salteoNodo++;
+			}
+			int saltoNodo =  1;
+			for(int g = 0; g < grado/2; g++) {
+				for(int i = 0; i < cantNodos; i++) {
+					matriz.setValor(i,i+saltoNodo, true);
+					cantAristas++;
+				}
+				saltoNodo++;
 			}
 		}
 		else { //impar
-			if(grado==1) throw new GrafoInvalidoException();
+			if(grado%2==1) throw new GrafoInvalidoException();
 		}
 		Grafo g = new Grafo(cantNodos,matriz,cantAristas,(cantAristas*100)/((cantNodos*(cantNodos-1))/2));
 		return g;
