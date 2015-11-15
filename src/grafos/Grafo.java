@@ -10,12 +10,22 @@ import java.util.ArrayList;
 
 public class Grafo {
 
-	private MatrizSimetrica matriz;
-	private int cantNodos;
-	private int cantAristas;
-	private double porcentAdy;
-	private int grMax;
-	private int grMin;
+	public MatrizSimetrica matriz;
+	public int cantNodos;
+	public int cantAristas;
+	public double porcentAdy;
+	public int grMax;
+	public int grMin;
+	
+	public Grafo(){
+		
+		matriz = null;
+		cantNodos = 0;
+		cantAristas = 0;
+		grMax = 0;
+		grMin = 0;
+		porcentAdy = 0;
+	}
 	
 	public Grafo(int cantNodos, MatrizSimetrica m, int cAristas, double pAdy){
 		this.cantNodos=cantNodos;
@@ -102,9 +112,11 @@ public class Grafo {
 	public int getTam(){  
 		return matriz.getTam();
 	}
+	
 	public int getAristas() {
 		return cantAristas;
 	}
+	
 	public void calcularGrados() {
 		grMax=1;
 		int aux;
