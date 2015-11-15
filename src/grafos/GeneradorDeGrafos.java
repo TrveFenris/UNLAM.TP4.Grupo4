@@ -60,8 +60,8 @@ public class GeneradorDeGrafos {
 		int cantAristas = 0;
 		if(cantNodos%2 == 0) { //par
 			if(grado%2==1) {
-				int saltoImpar = (cantNodos/2) - 1;
-				for(int i = 0; i < cantNodos; i++) {
+				int saltoImpar = (cantNodos/2);
+				for(int i = 0; i < cantNodos/2; i++) {
 					matriz.setValor(i,i+saltoImpar, true);
 					cantAristas++;
 				}
@@ -69,7 +69,7 @@ public class GeneradorDeGrafos {
 			int saltoNodo =  1;
 			for(int g = 0; g < grado/2; g++) {
 				for(int i = 0; i < cantNodos; i++) {
-					matriz.setValor(i,i+saltoNodo, true);
+					matriz.setValor(i,(i+saltoNodo)%6, true);
 					cantAristas++;
 				}
 				saltoNodo++;
