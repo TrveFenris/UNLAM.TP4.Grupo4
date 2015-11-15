@@ -72,23 +72,19 @@ public class GeneradorDeGrafos {
 			System.out.println("no se puede generar el grafo");
 			return null;
 		}
-		Grafo grafo = new Grafo();
-		grafo.cantNodos=cantNodos;
-		grafo.porcentAdy=porAdy;
-		grafo.matriz= new MatrizSimetrica(cantNodos);
-		grafo.cantAristas=(cantNodos*grado)/2;
-		grafo.grMax=grafo.grMin=grado;
+		
+		MatrizSimetrica matriz = new MatrizSimetrica(cantNodos);
 		
 		// Camino externo.
 		for(int x=0 ; x<cantNodos-1 ; x++)
-			grafo.matriz.setValor(x, x+1, true);
+			matriz.setValor(x, x+1, true);
 		if(cantNodos > 2){								// Si hay un nodo no necesita aristas. Si hay dos, la unica arista la completa en el for anterior.
-			grafo.matriz.setValor(0, cantNodos-1,true);
+			matriz.setValor(0, cantNodos-1,true);
 			grado -= 2;								// Coloco todas las aristas entre grafos consecutivos, entonces cada nodo ya tiene 2 aristas.
 			// Cruz.
 			if(grado%2 != 0){
 				for(int x=0 ; x<cantNodos/2 ; x++)
-					grafo.matriz.setValor(x,x+(cantNodos/2),true);
+					matriz.setValor(x,x+(cantNodos/2),true);
 				grado--;
 			}
 			// Salteando.
@@ -99,11 +95,11 @@ public class GeneradorDeGrafos {
 					int aux = nodoActual+saltear;
 					if(aux>cantNodos-1)
 						aux -= cantNodos;
-					grafo.matriz.setValor(nodoActual,aux,true);
+					matriz.setValor(nodoActual,aux,true);
 				}
 				saltear++;
 			}
 		}
-		return grafo;
+		return new Grafo(cantNodos, matriz, (cantNodos*grado)/2, porAdy);
 	}
 }

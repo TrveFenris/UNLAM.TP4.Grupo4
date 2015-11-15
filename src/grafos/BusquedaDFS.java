@@ -5,7 +5,7 @@ public class BusquedaDFS {
 	private int count;  
 	
 	public BusquedaDFS(Grafo g, int s) {
-		marked = new boolean[g.getCantNodos()];
+		marked = new boolean[g.getCantidadNodos()];
 		dfs(g,s);
 	}
 	

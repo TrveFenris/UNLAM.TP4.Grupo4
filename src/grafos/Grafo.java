@@ -10,22 +10,12 @@ import java.util.ArrayList;
 
 public class Grafo {
 
-	public MatrizSimetrica matriz;
-	public int cantNodos;
-	public int cantAristas;
-	public double porcentAdy;
-	public int grMax;
-	public int grMin;
-	
-	public Grafo(){
-		
-		matriz = null;
-		cantNodos = 0;
-		cantAristas = 0;
-		grMax = 0;
-		grMin = 0;
-		porcentAdy = 0;
-	}
+	private MatrizSimetrica matriz;
+	private int cantNodos;
+	private int cantAristas;
+	private double porcentAdy;
+	private int grMax;
+	private int grMin;
 	
 	public Grafo(int cantNodos, MatrizSimetrica m, int cAristas, double pAdy){
 		this.cantNodos=cantNodos;
@@ -80,7 +70,7 @@ public class Grafo {
 	public boolean getValor(int f, int c){
 		return matriz.getValor(f, c);
 	}
-	public int getCantNodos(){
+	public int getCantidadNodos(){
 		return cantNodos;
 	}
 	public boolean esAdyacente(int nodoA, int nodoB){
@@ -113,10 +103,19 @@ public class Grafo {
 		return matriz.getTam();
 	}
 	
-	public int getAristas() {
+	public int getCantidadAristas() {
 		return cantAristas;
 	}
 	
+	public int getGradoMaximo() {
+		return grMax;
+	}
+	public int getGradoMinimo() {
+		return grMin;
+	}
+	public double getPorcentajeAdyacencia() {
+		return porcentAdy;
+	}
 	public void calcularGrados() {
 		grMax=1;
 		int aux;
