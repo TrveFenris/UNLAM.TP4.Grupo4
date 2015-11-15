@@ -118,4 +118,22 @@ public class GeneradorDeGrafos {
 		}
 		return new Grafo(cantNodos, matriz, (cantNodos*grado)/2, porAdy);
 	}
+	
+	public static Grafo generarGrafoNPartito(int cantNodos, int n) throws GrafoInvalidoException {
+		if(cantNodos%n != 0) throw new GrafoInvalidoException();
+		MatrizSimetrica matriz = new MatrizSimetrica(cantNodos);
+		final int aristasContiguas = (cantNodos/n) - 1;
+		int aux = aristasContiguas;
+		int cantAristas = 0;
+		for(int i = 0; i < cantNodos; i++) {
+			if(aux > 0) {
+				matriz.setValor(i, i+1, true);
+				cantAristas++;
+			}
+			else
+				aux = aristasContiguas;
+			aux--;
+		}
+		return new Grafo(cantNodos,matriz,cantAristas,(cantAristas*100)/((cantNodos*(cantNodos-1))/2));
+	}
 }
