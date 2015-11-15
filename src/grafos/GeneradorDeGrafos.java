@@ -129,10 +129,10 @@ public class GeneradorDeGrafos {
 			if(aux > 0) {
 				matriz.setValor(i, i+1, true);
 				cantAristas++;
+				aux--;
 			}
 			else
 				aux = aristasContiguas;
-			aux--;
 		}
 		return new Grafo(cantNodos,matriz,cantAristas,(cantAristas*100)/((cantNodos*(cantNodos-1))/2));
 	}
