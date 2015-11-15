@@ -66,8 +66,46 @@ public class GeneradorDeGrafos {
 		return g;
 	}
 	//Generador de grafos regulares dados N y el porcentaje de adyacencia.
-	public static Grafo generarGrafoRegularConPorcentajeDeAdyacencia(int cantNodos, double porcAdy){
-		Grafo g = new Grafo();
-		return g;
+	public static Grafo generarGrafoRegularConPorcentajeDeAdyacencia (int cantNodos, int porAdy){
+		
+		// Igual al metodo genReg, pero no lo puedo llamar ya que necesito que el procentaje de adyacencia, necesito que quede el ingresado y no el calculado.
+		int grado = (porAdy * (cantNodos-1)) / 100;
+		if( cantNodos<1 || grado<0 || grado>=cantNodos || (cantNodos!=1 && grado==0) ||(cantNodos!=2 && grado==1) || (cantNodos%2!=0 && grado%2!=0) ){
+			System.out.println("no se puede generar el grafo");
+			return null;
+		}
+		Grafo grafo = new Grafo();
+		grafo.cantNodos=cantNodos;
+		grafo.porcentAdy=porAdy;
+		grafo.matriz= new MatrizSimetrica(cantNodos);
+		grafo.cantAristas=(cantNodos*grado)/2;
+		grafo.grMax=grafo.grMin=grado;
+		
+		// Camino externo.
+		for(int x=0 ; x<cantNodos-1 ; x++)
+			grafo.matriz.setValor(x, x+1, true);
+		if(cantNodos > 2){								// Si hay un nodo no necesita aristas. Si hay dos, la unica arista la completa en el for anterior.
+			grafo.matriz.setValor(0, cantNodos-1,true);
+			grado -= 2;								// Coloco todas las aristas entre grafos consecutivos, entonces cada nodo ya tiene 2 aristas.
+			// Cruz.
+			if(grado%2 != 0){
+				for(int x=0 ; x<cantNodos/2 ; x++)
+					grafo.matriz.setValor(x,x+(cantNodos/2),true);
+				grado--;
+			}
+			// Salteando.
+			int cantVeces = grado/2;
+			int saltear = 2;
+			for(int x=0 ; x<cantVeces ; x++){
+				for(int nodoActual=0 ; nodoActual<cantNodos ; nodoActual++){
+					int aux = nodoActual+saltear;
+					if(aux>cantNodos-1)
+						aux -= cantNodos;
+					grafo.matriz.setValor(nodoActual,aux,true);
+				}
+				saltear++;
+			}
+		}
+		return grafo;
 	}
 }
