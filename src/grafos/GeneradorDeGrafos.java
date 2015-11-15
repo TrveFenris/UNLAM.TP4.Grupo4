@@ -67,8 +67,6 @@ public class GeneradorDeGrafos {
 	}
 	//Generador de grafos regulares dados N y el porcentaje de adyacencia.
 	public static Grafo generarGrafoRegularConPorcentajeDeAdyacencia (int cantNodos, int porAdy){
-		
-		// Igual al metodo genReg, pero no lo puedo llamar ya que necesito que el procentaje de adyacencia, necesito que quede el ingresado y no el calculado.
 		int grado = (porAdy * (cantNodos-1)) / 100;
 		if( cantNodos<1 || grado<0 || grado>=cantNodos || (cantNodos!=1 && grado==0) ||(cantNodos!=2 && grado==1) || (cantNodos%2!=0 && grado%2!=0) ){
 			System.out.println("no se puede generar el grafo");
