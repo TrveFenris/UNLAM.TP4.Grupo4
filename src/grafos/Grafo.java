@@ -16,6 +16,7 @@ public class Grafo {
 	private double porcentAdy;
 	private int grMax;
 	private int grMin;
+	private int cantColores;
 	private Nodo[] nodos;
 	
 	public Grafo(int cantNodos, MatrizSimetrica m, int cAristas, double pAdy){
@@ -178,4 +179,213 @@ public class Grafo {
            }
         }
     }
+    
+/////////////////////////////////////////////////////////////////////////////////////////////	
+	public void colorearSecuencialAlternativo() {
+		int i, color;
+		cantColores = 0;
+		for(i=1; i<=cantNodos; i++) {
+			color = 1;
+			while(!sePuedeColorear(i, color))
+				color++;
+			nodos[i].setColor(color);
+			if(color > cantColores)
+				cantColores = color;
+		}
+	}	
+	
+	
+
+	public void colorearPowell(){
+		ordenarGradoDescendente(nodos,1,nodos.length-1);
+		colorearSecuencialAlternativo();
+	}
+	
+
+	public void colorearMatula(){
+		
+		ordenarGradoAscendente(nodos,1,nodos.length-1);
+		colorearSecuencialAlternativo();
+	}
+	
+	private boolean sePuedeColorear(int n, int color) {
+		int i=1; 
+		if(nodos[n].getColor() != 0) //si el nodo fue coloreado 
+			return false;      //no puedo colorear
+		while(i <= cantNodos) {
+			if(nodos[i].getColor() == color) {  //si el nodo a colorear es adyacente a un nodo ya pintado de ese
+				if(esAdyacente(i,n))  //color, no lo podré colorear
+					return false;
+			}
+			i++;
+		}
+		return true;
+	}
+	
+	
+	private void ordenarGradoAscendente(Nodo nodos[],int izq,int der)
+	{
+		Nodo pivote = nodos[(izq+der)/2],aux;  	        
+		int i=izq, d=der;	        
+		do	        
+		{	            
+			while(nodos[i].getGrado() < pivote.getGrado()) 
+				i++; 	            
+			while(nodos[d].getGrado() > pivote.getGrado()) 
+				d--;	            
+			if(i<=d)	            
+			{	                
+				aux=nodos[i];
+				nodos[i]=nodos[d];
+				nodos[d]=aux;
+				i++;	            	
+				d--;	            
+			}	        
+		}while (i<=d); 	            
+		if(izq<d) ordenarGradoAscendente(nodos,izq,d);	            
+		if(i<der) ordenarGradoAscendente(nodos,i,der);	        
+	}
+	
+	
+	private void ordenarGradoDescendente (Nodo nodo[],int izq,int der)
+	{
+		Nodo pivote = nodos[(izq+der)/2], aux;  	        
+		int i=izq, d=der;	        
+		do	        
+		{	            
+			while(nodo[i].getGrado() > pivote.getGrado()) 
+				i++; 	            
+			while(nodo[d].getGrado() < pivote.getGrado()) 
+				d--;	            
+			if(i<=d)	            
+			{	                
+				aux = nodo[i];
+				nodo[i]=nodo[d];
+				nodo[d]=aux;
+				i++;	            	
+				d--;	            
+			}	        
+		}while (i<=d); 	            
+		if(izq<d) ordenarGradoDescendente(nodo,izq,d);	            
+		if(i<der) ordenarGradoDescendente(nodo,i,der);	        
+	}
+	
+/////////////////////////////////////////////////////////////////////////////////////////
+//	public void alterarOrdenNodos()
+//	{
+//		cantColores=0;  //vuelvo a setearlo en 0 por si se ejecuta varias veces el coloreo
+//		Nodo vectorAux[]= new Nodo[cantNodos+1];  //creo vector auxiliar donde voy a alterar posiciones 
+//	    int[] numeros= new int[cantNodos+1];
+//	    Random rnd=new Random();
+//	    int aux=cantNodos, pos;
+//	    
+//	    //se rellena una matriz ordenada del 1 al..n
+//	    for(int i=1; i<=cantNodos; i++) 
+//	    	numeros[i]=i;
+//	   
+//	    for(int i=1; i<=cantNodos; i++)
+//	    {
+//	        pos= rnd.nextInt(aux);  
+//	        vectorAux[ numeros[pos]+1 ] = new Nodo(0,nodos[i].getGrado()); //cambio la pos del nodo, en un vector de nodos aux
+//	        numeros[pos]=numeros[aux-1]; aux--; 
+//	    }
+//		nodos = vectorAux;
+//		vectorAux=null;
+//	}
+//
+//	public void mostrarNodosColoreados(){
+//		System.out.println("Cantidad de colores: " + cantColores );
+//		for(int i=1; i<=cantNodos; i++)
+//			System.out.println( nodos[i].toString() );
+//	}
+//	
+	
+	public void colorear(int codAlgoritmo)
+	{
+		switch (codAlgoritmo)
+		{
+		case 1: colorearSecuencialAlternativo(); break;
+		case 2: colorearPowell(); break;
+		case 3: colorearMatula(); break;
+		}
+	}
+	
+	public void ejecutarCaso (String pathCaso, int cod_algoritmo)
+	{
+		int cantColor[] = new int[cantNodos];
+		int nroCromatico= cantNodos;
+		Nodo[] grafoColoreado=null;
+		
+		for(int i=0; i<10; i++)
+		{
+			colorear(cod_algoritmo);
+			cantColor[cantColores]+=1 ;
+			if(cantColores < nroCromatico) //me quedo con la menor cantidad de colores obtenidos hasta el
+			{                             //momento.
+				nroCromatico= cantColores;
+				grafoColoreado = nodos;
+			}
+			//alterarOrdenNodos();
+		}
+		
+		//grabarResumenCaso(pathCaso,cod_algoritmo,cantColor, nroCromatico);
+		//grabarGrafoColoreado(pathCaso,cod_algoritmo, grafoColoreado,nroCromatico);
+	
+	}
+	
+	
+//	public void grabarResumenCaso(String pathCaso, int cod_algoritmo, int[]cantColor, int nroCromatico)
+//	{
+//		String pathOUT = "Lote de prueba/"+cod_algoritmo + "_" + pathCaso + "_resumen.txt";
+//		FileWriter fw = null;
+//		PrintWriter pw= null;
+//		try {
+//			fw = new FileWriter(pathOUT);
+//			pw = new PrintWriter(fw);
+//			pw.println("Algoritmo: " + cod_algoritmo + "    Caso: "+ pathCaso);
+//			pw.println("NRO CROMATICO: " + nroCromatico);
+//			pw.println("CantColores  CantRepeticiones");
+//			for(int i=0; i<cantColor.length; i++)
+//			{
+//				if(cantColor[i]>0)
+//					pw.println(i + " " + cantColor[i]);
+//			}	
+//		} catch (IOException e) {
+//			e.printStackTrace();
+//		}
+//		finally{
+//				try {
+//					if(fw!=null)
+//						fw.close();
+//					} catch (IOException e) {
+//						e.printStackTrace();
+//					}
+//			} 
+//	}
+//	
+//	public void grabarGrafoColoreado (String pathCaso, int cod_algoritmo, Nodo[] grafoColoreado, int nroCromatico)
+//	{
+//		String pathOUT = "Lote de prueba/OUT/" + pathCaso + ".out";
+//		FileWriter fw = null;
+//		PrintWriter pw= null;
+//		try {
+//			fw = new FileWriter(pathOUT);
+//			pw = new PrintWriter(fw);
+//			pw.println(cantNodos + " "+ nroCromatico +" " + grMax);
+//			
+//			for(int i=1; i<=cantNodos; i++)
+//				pw.println(grafoColoreado[i] + " " + grafoColoreado[i].getColor());
+//			
+//		} catch (IOException e) {
+//			e.printStackTrace();
+//		}
+//		finally{
+//				try {
+//					if(fw!=null)
+//						fw.close();
+//					} catch (IOException e) {
+//						e.printStackTrace();
+//					}
+//			} 
+//	}
 }
