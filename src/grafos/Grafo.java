@@ -7,6 +7,11 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.Random;
+
+
 
 public class Grafo {
 
@@ -17,15 +22,16 @@ public class Grafo {
 	private int grMax;
 	private int grMin;
 	private int cantColores;
-	private Nodo[] nodos;
+	private ArrayList<Nodo> nodos= new ArrayList<Nodo>();
 	
 	public Grafo(int cantNodos, MatrizSimetrica m, int cAristas, double pAdy){
 		this.cantNodos=cantNodos;
 		this.matriz=m;
 		this.cantAristas=cAristas;
 		this.porcentAdy=pAdy;
-		this.nodos=new Nodo[cantNodos];
-		calcularGrados();
+		this.nodos= new ArrayList<Nodo>();
+		calcularGrados(); //Maximo y minimo
+		completarGrados(); //Para todos los nodos
 	}
 	
 	public Grafo(File archivo){
@@ -39,7 +45,6 @@ public class Grafo {
 			line = bufInput.readLine();
 			datos=line.split(" ");
 			cantNodos=Integer.parseInt(datos[0]);
-			nodos=new Nodo[cantNodos];
 			cantAristas=Integer.parseInt(datos[1]);
 			porcentAdy=Double.parseDouble(datos[2]);
 			grMax=Integer.parseInt(datos[3]);
@@ -50,6 +55,15 @@ public class Grafo {
 				line=bufInput.readLine();
 				datos = line.split(" ");	
 				matriz.setValor(Integer.parseInt(datos[0])-1, Integer.parseInt(datos[1])-1, true);
+			}
+			for(int i = 0; i<matriz.getDimension(); i++) {
+				int grado = 0;
+				for(int j = 0; j<matriz.getDimension(); j++) {
+					if(matriz.getValor(i, j) && i!=j) {
+						grado++;
+					}
+				}
+				nodos.add(new Nodo(i+1,0,grado));
 			}
 		}
 		catch (IOException e) {
@@ -65,6 +79,18 @@ public class Grafo {
 	            		e2.printStackTrace();
 	         	}
 	      	}
+	}
+	
+	public void completarGrados(){
+		int grado=0;
+		for(int f=0;f<cantNodos;f++) {
+			grado=0;
+			for(int c=0;c<cantNodos;c++) {
+				if(getValor(f, c)==true)
+					grado++;
+			}
+			nodos.add(new Nodo(f+1, 0, grado));
+		}
 	}
 	
 	public void setValor(int f, int c, boolean v){
@@ -103,6 +129,9 @@ public class Grafo {
 		return result;
 	}
 	
+	public int getCantidadColores() {
+		return cantColores;
+	}
 	public int getTam(){  
 		return matriz.getTam();
 	}
@@ -182,39 +211,51 @@ public class Grafo {
     
 /////////////////////////////////////////////////////////////////////////////////////////////	
 	public void colorearSecuencialAlternativo() {
-		int i, color;
+		int color;
 		cantColores = 0;
-		for(i=1; i<=cantNodos; i++) {
+		for(int i=0; i< cantNodos; i++) {
 			color = 1;
-			while(!sePuedeColorear(i, color))
+			while(!sePuedeColorear(i, color)){
 				color++;
-			nodos[i].setColor(color);
+			}
+			nodos.get(i).setColor(color);
+			//System.out.println(nodos.get(i).getNumero()+"\t"+nodos.get(i).getGrado());
 			if(color > cantColores)
 				cantColores = color;
 		}
 	}	
 	
-	
+	public void colorearSecuencial(){
+		Collections.shuffle(nodos);
+		colorearSecuencialAlternativo();
+	}
 
 	public void colorearPowell(){
-		ordenarGradoDescendente(nodos,1,nodos.length-1);
+		ordenarGradoDescendente(nodos,0,nodos.size()-1);
+		mezclarPorGrado();
 		colorearSecuencialAlternativo();
 	}
 	
+	public void despintarGrafo(){
+		for(int i=0;i<cantNodos;i++){
+			nodos.get(i).setColor(0);
+		}
+	}
 
-	public void colorearMatula(){
-		
-		ordenarGradoAscendente(nodos,1,nodos.length-1);
+	public void colorearMatula(){		
+		ordenarGradoAscendente(nodos,0,nodos.size()-1);
+		mezclarPorGrado();
+//		Collections.sort(nodos);
 		colorearSecuencialAlternativo();
 	}
 	
 	private boolean sePuedeColorear(int n, int color) {
-		int i=1; 
-		if(nodos[n].getColor() != 0) //si el nodo fue coloreado 
+		int i=0; 
+		if(nodos.get(n).getColor() != 0) //si el nodo fue coloreado 
 			return false;      //no puedo colorear
-		while(i <= cantNodos) {
-			if(nodos[i].getColor() == color) {  //si el nodo a colorear es adyacente a un nodo ya pintado de ese
-				if(esAdyacente(i,n))  //color, no lo podré colorear
+		while(i < cantNodos) {
+			if(nodos.get(i).getColor() == color && i!=n) {  //si el nodo a colorear es adyacente a un nodo ya pintado de ese
+				if(esAdyacente(nodos.get(i).getNumero()-1,nodos.get(n).getNumero()-1))  //color, no lo podré colorear
 					return false;
 			}
 			i++;
@@ -222,22 +263,62 @@ public class Grafo {
 		return true;
 	}
 	
+	private void mezclarPorGrado(){
+		int i =0;
+		int inicio=0,fin=0;
+		int grado=0;
+		Nodo aux;
+		Random r = new Random();
+		boolean[] mezclado= new boolean[cantNodos];
+		while(i<cantNodos){
+			inicio=i;
+			grado=nodos.get(i).getGrado();
+			while(i<cantNodos&&nodos.get(i).getGrado()==grado){
+				i++;
+			}
+			fin=i;
+			for(int k=inicio;k<(fin-inicio);k++){
+				int res=r.nextInt(fin-inicio);
+				if(mezclado[k])
+					res=r.nextInt(fin-inicio);
+				aux=nodos.get(k);
+				mezclado[k]=true;
+				nodos.set(k, nodos.get(inicio+res));
+				nodos.set(inicio+res, aux);
+			}
+		}
+		validarMezcla();
+	}
 	
-	private void ordenarGradoAscendente(Nodo nodos[],int izq,int der)
+	private void validarMezcla(){
+		int grado = nodos.get(0).getGrado();
+		for(Nodo n : nodos){
+			if(n.getGrado()!=grado){
+				if(n.getGrado()<grado){
+					System.out.println("GRAFO MAL MEZCLADO**************************************************");
+					System.exit(-1);
+				}
+				else
+					grado=n.getGrado();
+			}
+		}
+	}
+	
+	private void ordenarGradoAscendente(ArrayList<Nodo> nodo,int izq,int der)
 	{
-		Nodo pivote = nodos[(izq+der)/2],aux;  	        
+		Nodo pivote = nodos.get((izq+der)/2),aux;  	        
 		int i=izq, d=der;	        
 		do	        
 		{	            
-			while(nodos[i].getGrado() < pivote.getGrado()) 
+			while(nodos.get(i).getGrado() < pivote.getGrado()) 
 				i++; 	            
-			while(nodos[d].getGrado() > pivote.getGrado()) 
+			while(nodos.get(d).getGrado() > pivote.getGrado()) 
 				d--;	            
 			if(i<=d)	            
 			{	                
-				aux=nodos[i];
-				nodos[i]=nodos[d];
-				nodos[d]=aux;
+				aux = nodo.get(i);
+				nodo.set(i, nodo.get(d));
+				nodo.set(d, aux);
 				i++;	            	
 				d--;	            
 			}	        
@@ -247,21 +328,20 @@ public class Grafo {
 	}
 	
 	
-	private void ordenarGradoDescendente (Nodo nodo[],int izq,int der)
-	{
-		Nodo pivote = nodos[(izq+der)/2], aux;  	        
+	private void ordenarGradoDescendente (ArrayList<Nodo> nodo,int izq,int der) {
+		Nodo pivote = nodos.get((izq+der)/2);
+		Nodo aux;  	        
 		int i=izq, d=der;	        
 		do	        
 		{	            
-			while(nodo[i].getGrado() > pivote.getGrado()) 
+			while(nodo.get(i).getGrado() > pivote.getGrado()) 
 				i++; 	            
-			while(nodo[d].getGrado() < pivote.getGrado()) 
+			while(nodo.get(d).getGrado() < pivote.getGrado()) 
 				d--;	            
-			if(i<=d)	            
-			{	                
-				aux = nodo[i];
-				nodo[i]=nodo[d];
-				nodo[d]=aux;
+			if(i<=d) {	                
+				aux = nodo.get(i);
+				nodo.set(i, nodo.get(d));
+				nodo.set(d, aux);
 				i++;	            	
 				d--;	            
 			}	        
@@ -270,29 +350,34 @@ public class Grafo {
 		if(i<der) ordenarGradoDescendente(nodo,i,der);	        
 	}
 	
-/////////////////////////////////////////////////////////////////////////////////////////
-//	public void alterarOrdenNodos()
-//	{
+///////////////////////////////////////////////////////////////////////////////////////
+//	public void alterarOrdenNodos() {
 //		cantColores=0;  //vuelvo a setearlo en 0 por si se ejecuta varias veces el coloreo
-//		Nodo vectorAux[]= new Nodo[cantNodos+1];  //creo vector auxiliar donde voy a alterar posiciones 
-//	    int[] numeros= new int[cantNodos+1];
+//		Nodo vectorAux[]= new Nodo[cantNodos];  //creo vector auxiliar donde voy a alterar posiciones 
+//	    //int[] numeros= new int[cantNodos+1];
 //	    Random rnd=new Random();
 //	    int aux=cantNodos, pos;
 //	    
 //	    //se rellena una matriz ordenada del 1 al..n
-//	    for(int i=1; i<=cantNodos; i++) 
-//	    	numeros[i]=i;
+//	    //for(int i=1; i<=cantNodos; i++) 
+//	    	//numeros[i]=i;
 //	   
-//	    for(int i=1; i<=cantNodos; i++)
-//	    {
-//	        pos= rnd.nextInt(aux);  
-//	        vectorAux[ numeros[pos]+1 ] = new Nodo(0,nodos[i].getGrado()); //cambio la pos del nodo, en un vector de nodos aux
-//	        numeros[pos]=numeros[aux-1]; aux--; 
+//	    for(int i=0; i < cantNodos; i++) {
+//	        pos = rnd.nextInt(aux);
+//	        if(vectorAux[pos] == null)
+//	        	vectorAux[ pos ] = new Nodo(pos+1,0,nodos[i].getGrado()); //cambio la pos del nodo, en un vector de nodos aux
+//	        else i--;
 //	    }
 //		nodos = vectorAux;
 //		vectorAux=null;
 //	}
-//
+//	
+	private void alterarOrdenNodos() {
+		cantColores = 0;
+		Collections.shuffle(nodos);
+		
+	}
+	
 //	public void mostrarNodosColoreados(){
 //		System.out.println("Cantidad de colores: " + cantColores );
 //		for(int i=1; i<=cantNodos; i++)
@@ -300,21 +385,21 @@ public class Grafo {
 //	}
 //	
 	
-	public void colorear(int codAlgoritmo)
+	public void colorear(Algoritmos codAlgoritmo)
 	{
 		switch (codAlgoritmo)
 		{
-		case 1: colorearSecuencialAlternativo(); break;
-		case 2: colorearPowell(); break;
-		case 3: colorearMatula(); break;
+		case SECUENCIAL: colorearSecuencial(); break;
+		case WELSH_POWELL: colorearPowell(); break;
+		case MATULA: colorearMatula(); break;
 		}
 	}
 	
-	public void ejecutarCaso (String pathCaso, int cod_algoritmo)
+	public void ejecutarCaso (String pathCaso, Algoritmos cod_algoritmo)
 	{
 		int cantColor[] = new int[cantNodos];
 		int nroCromatico= cantNodos;
-		Nodo[] grafoColoreado=null;
+		ArrayList<Nodo> grafoColoreado = new ArrayList<Nodo>();
 		
 		for(int i=0; i<10; i++)
 		{
@@ -323,9 +408,8 @@ public class Grafo {
 			if(cantColores < nroCromatico) //me quedo con la menor cantidad de colores obtenidos hasta el
 			{                             //momento.
 				nroCromatico= cantColores;
-				grafoColoreado = nodos;
 			}
-			//alterarOrdenNodos();
+			alterarOrdenNodos();
 		}
 		
 		//grabarResumenCaso(pathCaso,cod_algoritmo,cantColor, nroCromatico);
@@ -334,58 +418,57 @@ public class Grafo {
 	}
 	
 	
-//	public void grabarResumenCaso(String pathCaso, int cod_algoritmo, int[]cantColor, int nroCromatico)
-//	{
-//		String pathOUT = "Lote de prueba/"+cod_algoritmo + "_" + pathCaso + "_resumen.txt";
-//		FileWriter fw = null;
-//		PrintWriter pw= null;
-//		try {
-//			fw = new FileWriter(pathOUT);
-//			pw = new PrintWriter(fw);
-//			pw.println("Algoritmo: " + cod_algoritmo + "    Caso: "+ pathCaso);
-//			pw.println("NRO CROMATICO: " + nroCromatico);
-//			pw.println("CantColores  CantRepeticiones");
-//			for(int i=0; i<cantColor.length; i++)
-//			{
-//				if(cantColor[i]>0)
-//					pw.println(i + " " + cantColor[i]);
-//			}	
-//		} catch (IOException e) {
-//			e.printStackTrace();
-//		}
-//		finally{
-//				try {
-//					if(fw!=null)
-//						fw.close();
-//					} catch (IOException e) {
-//						e.printStackTrace();
-//					}
-//			} 
-//	}
-//	
-//	public void grabarGrafoColoreado (String pathCaso, int cod_algoritmo, Nodo[] grafoColoreado, int nroCromatico)
-//	{
-//		String pathOUT = "Lote de prueba/OUT/" + pathCaso + ".out";
-//		FileWriter fw = null;
-//		PrintWriter pw= null;
-//		try {
-//			fw = new FileWriter(pathOUT);
-//			pw = new PrintWriter(fw);
-//			pw.println(cantNodos + " "+ nroCromatico +" " + grMax);
-//			
-//			for(int i=1; i<=cantNodos; i++)
-//				pw.println(grafoColoreado[i] + " " + grafoColoreado[i].getColor());
-//			
-//		} catch (IOException e) {
-//			e.printStackTrace();
-//		}
-//		finally{
-//				try {
-//					if(fw!=null)
-//						fw.close();
-//					} catch (IOException e) {
-//						e.printStackTrace();
-//					}
-//			} 
-//	}
+	public void grabarResumenCaso(String pathCaso, Algoritmos cod_algoritmo, int[]cantColor, int nroCromatico)
+	{
+		String pathOUT = "Lote de prueba/"+cod_algoritmo.getValor() + "_" + pathCaso + "_resumen.txt";
+		FileWriter fw = null;
+		PrintWriter pw= null;
+		try {
+			fw = new FileWriter(pathOUT);
+			pw = new PrintWriter(fw);
+			pw.println("Algoritmo: " + cod_algoritmo.getValor() + "    Caso: "+ pathCaso);
+			pw.println("NRO CROMATICO: " + nroCromatico);
+			pw.println("CantColores  CantRepeticiones");
+			for(int i=0; i<cantColor.length; i++)
+			{
+				if(cantColor[i]>0)
+					pw.println(i + " " + cantColor[i]);
+			}	
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		finally{
+				try {
+					if(fw!=null)
+						fw.close();
+					} catch (IOException e) {
+						e.printStackTrace();
+					}
+			} 
+	}
+	
+	public void grabarGrafoColoreado (File archivo)
+	{
+		FileWriter fw = null;
+		PrintWriter pw= null;
+		try {
+			fw = new FileWriter(archivo);
+			pw = new PrintWriter(fw);
+			pw.println(cantNodos + " " + cantColores);
+			
+			for(int i=0; i<cantNodos; i++)
+				pw.println(nodos.get(i).getNumero()+" "+nodos.get(i).getColor());
+			
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		finally{
+				try {
+					if(fw!=null)
+						fw.close();
+					} catch (IOException e) {
+						e.printStackTrace();
+					}
+			} 
+	}
 }

@@ -1,18 +1,20 @@
 package grafos;
 
-public class Nodo {
-	
+public class Nodo implements Comparable<Nodo>{
+	private int numero;
 	private int color;
 	private int grado;
 	
 	public Nodo(){
 		this.color = 0;
 		this.grado = 0;
+		numero = 0;
 	}
 	
-	public Nodo(int color, int grado){
+	public Nodo(int num, int color, int grado){
 		this.color = color;
 		this.grado = grado;
+		numero = num;
 	}
 	
 	public void setColor(int color){
@@ -30,4 +32,20 @@ public class Nodo {
 	public int getGrado(){
 		return this.grado;
 	}
+	
+	public int getNumero(){
+		return numero;
+	}
+
+	@Override
+	public int compareTo(Nodo o) {
+		if(this.grado<o.grado)
+			return -1;
+		else
+			if(this.grado>o.grado)
+				return 1;
+		return 0;
+	}
+	
+	
 }
